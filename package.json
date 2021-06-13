@@ -1,0 +1,23 @@
+{
+  "name": "linebot_gssd",
+  "version": "1.0.0",
+  "description": "LineBot for GSSD Service",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Shiou-Ju/LineBot_GSSD.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Shiou-Ju/LineBot_GSSD/issues"
+  },
+  "homepage": "https://github.com/Shiou-Ju/LineBot_GSSD#readme",
+  "dependencies": {
+    "dotenv": "^10.0.0",
+    "linebot": "^1.6.1"
+  }
+}
