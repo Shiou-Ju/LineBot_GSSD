@@ -28,11 +28,11 @@ bot.on("message", function (event) {
     const queryURL = `https://gssd-server.herokuapp.com/api/v1/posts`;
     // 搜尋字號
     if (event.message.text.includes("年度")) {
-      let caseName = event.message.text.split("搜尋 ")[1];
+      let caseName = event.message.text.split("搜尋 ")[1].trim();
       // 搜尋字號&日期
       if (publishDateRegExp.test(event.message.text)) {
-        let publishDate = caseName.split(`&`)[1];
-        caseName = caseName.split(`&`)[0];
+        let publishDate = caseName.split(`&`)[1].trim();
+        caseName = caseName.split(`&`)[0].trim();
 
         let threePosts = ``;
 
@@ -112,7 +112,7 @@ bot.on("message", function (event) {
     }
     // 搜尋送達人
     else {
-      let addressee = event.message.text.split("搜尋 ")[1];
+      let addressee = event.message.text.split("搜尋 ")[1].trim();
 
       let threePosts = ``;
 
@@ -152,7 +152,8 @@ bot.on("message", function (event) {
     }
   }
   // 測試字元
-  else if (event.message.text === "測試 ") {
+  else if (event.message.text.includes("測試 ")) {
+    let replyText = event.message.text.split("測試 ")[1].trim();
     event
       .reply(`測試訊息：\n${event.message.text}`)
       .then(function (data) {
