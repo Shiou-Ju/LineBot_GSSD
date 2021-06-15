@@ -2,6 +2,7 @@
 const linebot = require("linebot");
 const dotenv = require("dotenv");
 const axios = require("axios");
+const qs = require("qs");
 
 dotenv.config({ path: "./config.env" });
 
@@ -11,6 +12,36 @@ const bot = linebot({
   channelSecret: process.env.CHANNEL_SECRET,
   channelAccessToken: process.env.CHANNEL_TOEKN,
 });
+
+// 傳送到Google Sheet記錄使用情境
+function sendPostGS(userID,messageInput,recordTime){
+  let dateTW = new Date(recordTime).toLocaleString("zh-TW", {
+    timeZone: "Asia/Taipei",
+  });
+
+  // let recordArray = [userID, messageInput, dateTW];
+  // recordArray = JSON.stringify(recordArray);
+
+  let parameter = {
+    userID: userID,
+    messageInput: messageInput.trim(),
+    dateTW: dateTW,
+    sheetUrl: process.env.SHEET_URL,
+    sheetTag: process.env.SHEET_TAG,
+  };
+
+    axios({
+      method: "post",
+      url: process.env.GOOGLE_APP,
+      data: qs.stringify(parameter),
+    })
+      .then((res) => {
+        console.log(res.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+}
 
 // 加入好友顯示的歡迎的訊息
 bot.on("follow", function (event) {
@@ -27,6 +58,7 @@ bot.on("message", function (event) {
       .reply(`本服務尚不接受多媒體檔案，敬請見諒！`)
       .then(function (data) {
         console.log(`${event.source.userId} ${event}`);
+         sendPostGS(event.source.userId, `NOT_A_STRING`, event.timestamp);
       })
       .catch(function (error) {
         console.error(error);
@@ -66,6 +98,11 @@ bot.on("message", function (event) {
                 )
                 .then(function (data) {
                   console.log(`${event.source.userId} ${event.message.text}`);
+                   sendPostGS(
+                     event.source.userId,
+                     event.message.text,
+                     event.timestamp
+                   );
                 })
                 .catch(function (error) {
                   console.error(error);
@@ -106,6 +143,11 @@ bot.on("message", function (event) {
                 )
                 .then(function (data) {
                   console.log(`${event.source.userId} ${event.message.text}`);
+                   sendPostGS(
+                     event.source.userId,
+                     event.message.text,
+                     event.timestamp
+                   );
                 })
                 .catch(function (error) {
                   console.error(error);
@@ -133,6 +175,11 @@ bot.on("message", function (event) {
             .reply(`名字請勿輸入超過6個字，請再試一次`)
             .then(function (data) {
               console.log(`${event.source.userId} ${event.message.text}`);
+               sendPostGS(
+                 event.source.userId,
+                 event.message.text,
+                 event.timestamp
+               );
             })
             .catch(function (error) {
               console.error(error);
@@ -160,6 +207,11 @@ bot.on("message", function (event) {
                 )
                 .then(function (data) {
                   console.log(`${event.source.userId} ${event.message.text}`);
+                  sendPostGS(
+                    event.source.userId,
+                    event.message.text,
+                    event.timestamp
+                  );
                 })
                 .catch(function (error) {
                   console.error(error);
@@ -185,6 +237,7 @@ bot.on("message", function (event) {
         .reply(`測試訊息：\n${replyText}`)
         .then(function (data) {
           console.log(`${event.source.userId} ${event.message.text}`);
+           sendPostGS(event.source.userId, event.message.text, event.timestamp);
         })
         .catch(function (error) {
           console.error(error);
@@ -198,6 +251,7 @@ bot.on("message", function (event) {
         )
         .then(function (data) {
           console.log(`${event.source.userId} ${event.message.text}`);
+           sendPostGS(event.source.userId, event.message.text, event.timestamp);
         })
         .catch(function (error) {
           console.error(error);
