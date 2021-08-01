@@ -1,4 +1,3 @@
-// 引用linebot SDK
 const linebot = require("linebot");
 const dotenv = require("dotenv");
 const axios = require("axios");
@@ -14,13 +13,10 @@ const bot = linebot({
 });
 
 // 傳送到Google Sheet記錄使用情境
-function sendPostGS(userID,messageInput,recordTime){
+function sendPostGS(userID, messageInput, recordTime) {
   let dateTW = new Date(recordTime).toLocaleString("zh-TW", {
     timeZone: "Asia/Taipei",
   });
-
-  // let recordArray = [userID, messageInput, dateTW];
-  // recordArray = JSON.stringify(recordArray);
 
   let parameter = {
     userID: userID,
@@ -30,17 +26,17 @@ function sendPostGS(userID,messageInput,recordTime){
     sheetTag: process.env.SHEET_TAG,
   };
 
-    axios({
-      method: "post",
-      url: process.env.GOOGLE_APP,
-      data: qs.stringify(parameter),
+  axios({
+    method: "post",
+    url: process.env.GOOGLE_APP,
+    data: qs.stringify(parameter),
+  })
+    .then((res) => {
+      console.log(res.data);
     })
-      .then((res) => {
-        console.log(res.data);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+    .catch((error) => {
+      console.error(error);
+    });
 }
 
 // 加入好友顯示的歡迎的訊息
@@ -48,17 +44,16 @@ bot.on("follow", function (event) {
   event.reply(
     `感謝您使用公示送達LINE BOT服務！\n\n您可以輸入名字，系統將會顯示該名字對應之最近三筆的公示送達資料；也可以輸入字號來查詢該案件最近三筆公示送達公告。\n\n公示送達LINE服務使用方式：\n1. 搜尋應受送達人：\n請輸入「搜尋 名字」\n（中間為半形空格，名字不超過6個字）\n例如：\n搜尋 王小明\n搜尋 Steve\n\n2. 查詢特定案件字號：\n請輸入「搜尋 案件字號」\n（中間為半形空格）\n例如：\n搜尋 109年度訴字第1號\n\n3. 查詢特定字號&特定日期之公告：\n請輸入「搜尋 案件字號&民國年-月-日」\n例如：\n搜尋 109年度訴字第1號&110-01-01`
   );
-});;
-
+});
 
 // 當有人傳送訊息給Bot時
 bot.on("message", function (event) {
   if (typeof event.message.text !== `string`) {
     event
       .reply(`本服務尚不接受多媒體檔案，敬請見諒！`)
-      .then(function (data) {
+      .then(function () {
         console.log(`${event.source.userId} ${event}`);
-         sendPostGS(event.source.userId, `NOT_A_STRING`, event.timestamp);
+        sendPostGS(event.source.userId, `NOT_A_STRING`, event.timestamp);
       })
       .catch(function (error) {
         console.error(error);
@@ -96,13 +91,13 @@ bot.on("message", function (event) {
                 .reply(
                   `搜尋${caseName}\n於${publishDate}的公告\n最新${resLength}筆結果如下\n\n${threePosts}`
                 )
-                .then(function (data) {
+                .then(function () {
                   console.log(`${event.source.userId} ${event.message.text}`);
-                   sendPostGS(
-                     event.source.userId,
-                     event.message.text,
-                     event.timestamp
-                   );
+                  sendPostGS(
+                    event.source.userId,
+                    event.message.text,
+                    event.timestamp
+                  );
                 })
                 .catch(function (error) {
                   console.error(error);
@@ -115,9 +110,6 @@ bot.on("message", function (event) {
               );
               console.log(`${event.source.userId} ${event.message.text}`);
             });
-          // .finally(() => {
-          //   event.reply(`發生錯誤，尚在維修中，尚祈海涵！`);
-          // });
         }
         // 搜尋單純字號
         else {
@@ -141,13 +133,13 @@ bot.on("message", function (event) {
                 .reply(
                   `搜尋${caseName}的公告\n最新${resLength}筆結果如下\n\n${threePosts}`
                 )
-                .then(function (data) {
+                .then(function () {
                   console.log(`${event.source.userId} ${event.message.text}`);
-                   sendPostGS(
-                     event.source.userId,
-                     event.message.text,
-                     event.timestamp
-                   );
+                  sendPostGS(
+                    event.source.userId,
+                    event.message.text,
+                    event.timestamp
+                  );
                 })
                 .catch(function (error) {
                   console.error(error);
@@ -161,9 +153,6 @@ bot.on("message", function (event) {
               );
               console.log(`${event.source.userId} ${event.message.text}`);
             });
-          //  .finally(() => {
-          //    event.reply(`發生錯誤，尚在維修中，尚祈海涵！`);
-          //  });
         }
       }
       // 搜尋送達人
@@ -173,13 +162,13 @@ bot.on("message", function (event) {
         if (addressee.length > 6) {
           event
             .reply(`名字請勿輸入超過6個字，請再試一次`)
-            .then(function (data) {
+            .then(function () {
               console.log(`${event.source.userId} ${event.message.text}`);
-               sendPostGS(
-                 event.source.userId,
-                 event.message.text,
-                 event.timestamp
-               );
+              sendPostGS(
+                event.source.userId,
+                event.message.text,
+                event.timestamp
+              );
             })
             .catch(function (error) {
               console.error(error);
@@ -205,7 +194,7 @@ bot.on("message", function (event) {
                 .reply(
                   `搜尋 ${addressee} 最新${resLength}筆結果如下\n${threePosts}`
                 )
-                .then(function (data) {
+                .then(function () {
                   console.log(`${event.source.userId} ${event.message.text}`);
                   sendPostGS(
                     event.source.userId,
@@ -224,9 +213,6 @@ bot.on("message", function (event) {
               );
               console.log(`${event.source.userId} ${event.message.text}`);
             });
-          // .finally(() => {
-          //   event.reply(`發生錯誤，尚在維修中，尚祈海涵！`)
-          // });
         }
       }
     }
@@ -235,9 +221,9 @@ bot.on("message", function (event) {
       let replyText = event.message.text.split("測試 ")[1].trim();
       event
         .reply(`測試訊息：\n${replyText}`)
-        .then(function (data) {
+        .then(function () {
           console.log(`${event.source.userId} ${event.message.text}`);
-           sendPostGS(event.source.userId, event.message.text, event.timestamp);
+          sendPostGS(event.source.userId, event.message.text, event.timestamp);
         })
         .catch(function (error) {
           console.error(error);
@@ -249,9 +235,9 @@ bot.on("message", function (event) {
         .reply(
           `抱歉，您的訊息目前不支援！\n\n您可以輸入名字，系統將會顯示該名字對應之最近三筆的公示送達資料；也可以輸入字號來查詢該案件最近三筆公示送達公告。\n\n公示送達LINE服務使用方式：\n1. 搜尋應受送達人：\n請輸入「搜尋 名字」\n（中間為半形空格，名字不超過6個字）\n例如：\n搜尋 王小明\n搜尋 Steve\n\n2. 查詢特定案件字號：\n請輸入「搜尋 案件字號」\n（中間為半形空格）\n例如：\n搜尋 109年度訴字第1號\n\n3. 查詢特定字號&特定日期之公告：\n請輸入「搜尋 案件字號&民國年-月-日」\n例如：\n搜尋 109年度訴字第1號&110-01-01`
         )
-        .then(function (data) {
+        .then(function () {
           console.log(`${event.source.userId} ${event.message.text}`);
-           sendPostGS(event.source.userId, event.message.text, event.timestamp);
+          sendPostGS(event.source.userId, event.message.text, event.timestamp);
         })
         .catch(function (error) {
           console.error(error);
